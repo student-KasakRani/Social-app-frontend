@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Feed from "./pages/Feed";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [page, setPage] = useState("login");
+
+  if (!user) {
+    return (
+      <div>
+        {page === "login" ? (
+          <>
+            <Login setUser={setUser} />
+            <button onClick={() => setPage("signup")}>Go Signup</button>
+          </>
+        ) : (
+          <>
+            <Signup />
+            <button onClick={() => setPage("login")}>Go Login</button>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return <Feed user={user} setUser={setUser} />;
 }
 
 export default App;
+
+
+        
