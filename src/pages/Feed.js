@@ -11,8 +11,8 @@ const Feed = () => {
         "https://social-app-backend-1-c98y.onrender.com/posts"
       );
       setPosts(res.data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
     }
   }, []);
 
@@ -26,7 +26,7 @@ const Feed = () => {
       <h2>Feed</h2>
 
       {posts.length === 0 ? (
-        <p>No posts available</p>
+        <p>No posts yet</p>
       ) : (
         posts.map((post) => (
           <div
@@ -38,7 +38,7 @@ const Feed = () => {
               borderRadius: "8px",
             }}
           >
-            <h3>{post.title}</h3>
+            <h4>{post.title}</h4>
             <p>{post.content}</p>
           </div>
         ))
@@ -48,3 +48,4 @@ const Feed = () => {
 };
 
 export default Feed;
+
