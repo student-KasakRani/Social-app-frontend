@@ -1,47 +1,107 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import BASE_URL from "../api";
 
-const Feed = () => {
+export default function Feed({ user, setUser }) {
   const [posts, setPosts] = useState([]);
+  const [text, setText] = useState("");
+
+  const token = localStorage.getItem("token");
+
+  const fetchPosts = async () => {
+    const res = await fetch(`${BASE_URL}/api/posts`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    setPosts(data);
+  };
+
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await axios.get(
-          "https://social-app-backend-1-c98y.onrender.com/posts"
-        );
-        setPosts(res.data);
-      } catch (error) {
-        console.log("Error fetching posts:", error);
-      }
-    };
-
     fetchPosts();
   }, []);
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>Social Feed</h2>
+  const createPost = async () => {
+    await fetch(`${BASE_URL}/api/posts/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        userId: user._id,
+        username: user.name,
+        text,
+      }),
+    });
+    setText("");
+    fetchPosts();
+  };
 
-      {posts.length === 0 ? (
-        <p>No posts yet</p>
-      ) : (
-        posts.map((post) => (
-          <div
-            key={post._id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
+  const likePost = async (id) => {
+    await fetch(`${BASE_URL}/api/posts/like/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ username: user.name }),
+    });
+    fetchPosts();
+  };
+
+  const commentPost = async (id, comment) => {
+    await fetch(`${BASE_URL}/api/posts/comment/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ username: user.name, text: comment }),
+    });
+    fetchPosts();
+  };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  return (
+    <div>
+      <h2>Feed</h2>
+      <button onClick={logout}>Logout</button>
+
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Write something..."
+      />
+      <button onClick={createPost}>Post</button>
+
+      {posts.map((p) => (
+        <div key={p._id} style={{ border: "1px solid black", margin: 10, padding: 10 }}>
+          <h4>{p.username}</h4>
+          <p>{p.text}</p>
+
+          <button onClick={() => likePost(p._id)}>
+            Like ({p.likes.length})
+          </button>
+
+          <input
+            placeholder="comment"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commentPost(p._id, e.target.value);
             }}
-          >
-            <h4>{post.title}</h4>
-            <p>{post.content}</p>
-          </div>
-        ))
-      )}
+          />
+
+          <p>Comments: {p.comments.length}</p>
+        </div>
+      ))}
     </div>
   );
-};
+}
 
-export default Feed;
