@@ -1,25 +1,23 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
 
-  // fetch function
-  const fetchPosts = useCallback(async () => {
-    try {
-      const res = await axios.get(
-        "https://social-app-backend-1-c98y.onrender.com/posts"
-      );
-      setPosts(res.data);
-    } catch (error) {
-      console.log("Error fetching posts:", error);
-    }
-  }, []);
-
-  // useEffect
   useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get(
+          "https://social-app-backend-1-c98y.onrender.com/posts"
+        );
+        setPosts(res.data);
+      } catch (error) {
+        console.log("Error fetching posts:", error);
+      }
+    };
+
     fetchPosts();
-  }, [fetchPosts]);
+  }, []);
 
   return (
     <div style={{ padding: "20px" }}>
