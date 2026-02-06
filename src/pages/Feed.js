@@ -4,26 +4,26 @@ import axios from "axios";
 const Feed = () => {
   const [posts, setPosts] = useState([]);
 
-  
+  // fetch function
   const fetchPosts = useCallback(async () => {
     try {
       const res = await axios.get(
         "https://social-app-backend-1-c98y.onrender.com/posts"
       );
       setPosts(res.data);
-    } catch (err) {
-      console.error("Error fetching posts:", err);
+    } catch (error) {
+      console.log("Error fetching posts:", error);
     }
   }, []);
 
-  
+  // useEffect
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Feed</h2>
+      <h2>Social Feed</h2>
 
       {posts.length === 0 ? (
         <p>No posts yet</p>
@@ -35,7 +35,6 @@ const Feed = () => {
               border: "1px solid #ccc",
               padding: "10px",
               marginBottom: "10px",
-              borderRadius: "8px",
             }}
           >
             <h4>{post.title}</h4>
@@ -48,4 +47,3 @@ const Feed = () => {
 };
 
 export default Feed;
-
